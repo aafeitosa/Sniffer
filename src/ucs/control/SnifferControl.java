@@ -23,7 +23,7 @@ import jpcap.packet.IPPacket;
 import jpcap.packet.Packet;
 import jpcap.packet.TCPPacket;
 import jpcap.packet.UDPPacket;
-import cn.edu.shu.ipv6sniffer.model.Ipv6SnifferModel;
+import ucs.model.SnifferModel;
 
 /**
  * 
@@ -33,7 +33,7 @@ public class SnifferControl {
 
 	public static int totalPacket = 0;// O número total de pacotes
 
-	private Ipv6SnifferModel ipv6SnifferModel = new Ipv6SnifferModel(this);// Camada de captura
+	private SnifferModel ipv6SnifferModel = new SnifferModel(this);// Camada de captura
 
 	private javax.swing.JLabel ipv6Total;// Exibe o número total de ipv6
 	private javax.swing.JLabel bytesTotal;// Usado para exibir o fluxo total
@@ -74,10 +74,10 @@ public class SnifferControl {
 	public void initAllComponents() {
 		// TODO Auto-generated method stub
 		this.networkInterface.setModel(networkComboBoxModel);
-		NetworkInterface[] devices = this.ipv6SnifferModel.getDevices();
+		/*NetworkInterface[] devices = this.ipv6SnifferModel.getDevices();
 		for (NetworkInterface device : devices) {
 			this.networkComboBoxModel.addElement(new String(device.description));
-		}
+		}*/
 		this.packetTable.setModel(packetTableModel);
 		this.detailPacketTreeModel = new DefaultTreeModel(null);
 		this.detailPacketTree.setModel(this.detailPacketTreeModel);

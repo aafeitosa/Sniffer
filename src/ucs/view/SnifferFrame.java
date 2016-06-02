@@ -11,7 +11,18 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import cn.edu.shu.ipv6sniffer.control.Ipv6SnifferControl;
+import ucs.control.SnifferControl;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.GroupLayout;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
+import java.awt.Rectangle;
+import javax.swing.JPanel;
+import java.awt.GridLayout;
+import java.awt.Component;
+import java.awt.BorderLayout;
+import javax.swing.BoxLayout;
+import java.awt.FlowLayout;
 
 /**
  *
@@ -53,11 +64,8 @@ public class SnifferFrame extends javax.swing.JFrame {
 	private void initComponents() {
 
 		jPanel1 = new javax.swing.JPanel();
-		jLabel1 = new javax.swing.JLabel();
-		networkInterface = new javax.swing.JComboBox<String>();
 		jScrollPane1 = new javax.swing.JScrollPane();
 		packetTable = new javax.swing.JTable();
-		startButton = new javax.swing.JButton();
 		statsButton = new javax.swing.JButton();
 		jScrollPane2 = new javax.swing.JScrollPane();
 		detailPacketTree = new javax.swing.JTree();
@@ -65,18 +73,6 @@ public class SnifferFrame extends javax.swing.JFrame {
 		//ipv6OnlyButton = new javax.swing.JRadioButton();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-		//jLabel1.setFont(new java.awt.Font("Times New Roman", 0, 18));
-		jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-		jLabel1.setText("Selecione um adaptador de rede para monitorar");
-
-		//networkInterface.setFont(new java.awt.Font("Times New Roman", 0, 18));
-		networkInterface.setModel(new javax.swing.DefaultComboBoxModel<String>());
-		networkInterface.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				networkInterfaceActionPerformed(evt);
-			}
-		});
 
 		packetTable.setModel(new javax.swing.table.DefaultTableModel() {
 			/**
@@ -97,13 +93,6 @@ public class SnifferFrame extends javax.swing.JFrame {
 					}
 				});
 		jScrollPane1.setViewportView(packetTable);
-
-		startButton.setText("Start");
-		startButton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				startButtonActionPerformed(evt);
-			}
-		});
 		
 		statsButton.setText("Estatisticas");
 		statsButton.addActionListener(new java.awt.event.ActionListener() {
@@ -117,111 +106,65 @@ public class SnifferFrame extends javax.swing.JFrame {
 		totalPanel = new JScrollPane (textArea, 
 				   JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		
+		JPanel panel = new JPanel();
+		
 		javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(
 				jPanel1);
+		jPanel1Layout.setHorizontalGroup(
+			jPanel1Layout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(jPanel1Layout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(jPanel1Layout.createParallelGroup(Alignment.TRAILING)
+						.addComponent(panel, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 651, Short.MAX_VALUE)
+						.addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 651, Short.MAX_VALUE)
+						.addComponent(totalPanel, GroupLayout.DEFAULT_SIZE, 651, Short.MAX_VALUE)
+						.addComponent(jScrollPane2, GroupLayout.DEFAULT_SIZE, 651, Short.MAX_VALUE))
+					.addGap(25))
+		);
+		jPanel1Layout.setVerticalGroup(
+			jPanel1Layout.createParallelGroup(Alignment.LEADING)
+				.addGroup(jPanel1Layout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
+					.addGap(18)
+					.addComponent(jScrollPane2, GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE)
+					.addGap(18)
+					.addComponent(totalPanel, GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
+					.addGap(34))
+		);
+		panel.setLayout(null);
+		jLabel1 = new javax.swing.JLabel();
+		jLabel1.setBounds(10, 9, 229, 14);
+		panel.add(jLabel1);
+		
+				//jLabel1.setFont(new java.awt.Font("Times New Roman", 0, 18));
+				jLabel1.setHorizontalAlignment(SwingConstants.LEFT);
+				jLabel1.setText("Selecione um adaptador de rede para monitorar");
+				networkInterface = new javax.swing.JComboBox<String>();
+				networkInterface.setBounds(249, 6, 241, 20);
+				panel.add(networkInterface);
+				
+						//networkInterface.setFont(new java.awt.Font("Times New Roman", 0, 18));
+						networkInterface.setModel(new javax.swing.DefaultComboBoxModel<String>());
+						networkInterface.addActionListener(new java.awt.event.ActionListener() {
+							public void actionPerformed(java.awt.event.ActionEvent evt) {
+								networkInterfaceActionPerformed(evt);
+							}
+						});
+				startButton = new javax.swing.JButton();
+				startButton.setBounds(496, 5, 74, 23);
+				startButton.setContentAreaFilled(false);
+				panel.add(startButton);
+				
+						startButton.setText("Start");
+						startButton.addActionListener(new java.awt.event.ActionListener() {
+							public void actionPerformed(java.awt.event.ActionEvent evt) {
+								startButtonActionPerformed(evt);
+							}
+						});
 		jPanel1.setLayout(jPanel1Layout);
-		jPanel1Layout
-				.setHorizontalGroup(jPanel1Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								javax.swing.GroupLayout.Alignment.TRAILING,
-								jPanel1Layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												jPanel1Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING)
-														.addComponent(
-																totalPanel,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																Short.MAX_VALUE)
-														.addComponent(
-																jScrollPane2)
-														.addComponent(
-																jScrollPane1)
-														.addGroup(
-																jPanel1Layout
-																		.createSequentialGroup()
-																		.addComponent(
-																				jLabel1,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				100,
-																				Short.MAX_VALUE)
-																		.addComponent(
-																				networkInterface,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				300,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)
-																		.addGap(10,
-																				10,
-																				10)
-																		.addComponent(
-																				startButton,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				100,
-																				javax.swing.GroupLayout.PREFERRED_SIZE)))/*
-																		.addComponent(
-																				statsButton,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				100,
-																				javax.swing.GroupLayout.PREFERRED_SIZE))*/
-										.addGap(25, 25, 25)));
-		jPanel1Layout
-				.setVerticalGroup(jPanel1Layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								jPanel1Layout
-										.createSequentialGroup()
-										.addGap(32, 32, 32)
-										.addGroup(
-												jPanel1Layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(
-																jLabel1,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																49,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																networkInterface,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																49,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																startButton,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																49,
-																javax.swing.GroupLayout.PREFERRED_SIZE)/*
-														.addComponent(
-																statsButton,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																49,
-																javax.swing.GroupLayout.PREFERRED_SIZE)*/)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.UNRELATED,
-												11, Short.MAX_VALUE)
-										.addComponent(
-												jScrollPane1,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												189,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addGap(18, 18, 18)
-										.addComponent(
-												jScrollPane2,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												227,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addGap(18, 18, 18)
-										.addComponent(
-												totalPanel,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE)
-										.addContainerGap()));
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(
 				getContentPane());
@@ -306,5 +249,4 @@ public class SnifferFrame extends javax.swing.JFrame {
 	private javax.swing.JButton statsButton;
 	private javax.swing.JScrollPane totalPanel;
 	private javax.swing.JTextArea textArea;
-	// End of variables declaration//GEN-END:variables
 }

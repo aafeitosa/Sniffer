@@ -3,16 +3,14 @@ package ucs.model;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import cn.edu.shu.ipv6sniffer.control.Ipv6SnifferControl;
 import jpcap.JpcapCaptor;
 import jpcap.NetworkInterface;
 import jpcap.PacketReceiver;
-import jpcap.packet.ARPPacket;
 import jpcap.packet.DatalinkPacket;
 import jpcap.packet.EthernetPacket;
-import jpcap.packet.ICMPPacket;
 import jpcap.packet.IPPacket;
 import jpcap.packet.Packet;
+import ucs.control.SnifferControl;
 
 /**
  * 
