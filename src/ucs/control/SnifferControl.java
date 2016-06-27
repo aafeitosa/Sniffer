@@ -31,36 +31,17 @@ import ucs.model.SnifferModel;
  */
 public class SnifferControl {
 
-	public static int totalPacket = 0;// O número total de pacotes
-
 	private SnifferModel ipv6SnifferModel = new SnifferModel(this);// Camada de captura
-
-	private javax.swing.JLabel ipv6Total;// Exibe o número total de ipv6
-	private javax.swing.JLabel bytesTotal;// Usado para exibir o fluxo total
-	private javax.swing.JLabel packetTotal;// Usado para exibir o fluxo total
-	
-	private javax.swing.JLabel totalTCP;// Usado para o total de pacotes TCP
-	private javax.swing.JLabel totalUDP;// Usado para o total de pacotes UDP
-	private javax.swing.JLabel totalHotOpt;// Usado para o total de pacotes Hop
-	private javax.swing.JLabel totalIpv6Frag;// Usado para o total de pacotes IPv6 Frag.
-	private javax.swing.JLabel totalIgmp;// Usado para o total de pacotes IGMP
-	private javax.swing.JLabel totalIcmp6;// Usado para o total de pacotes ICMPv6
-	private javax.swing.JLabel totalNoNxt;// Usado para o total de pacotes No next
-	private javax.swing.JLabel totalOpts;// Usado para o total de pacotes Options
-	private javax.swing.JLabel totalRoute;// Usado para o total de pacotes Route
-	private javax.swing.JLabel totalUnknown;// Usado para o total de pacotes Unknown
 
 	private javax.swing.JTree detailPacketTree;// Usado para listar detalhes do pacote
 	private javax.swing.JComboBox<String> networkInterface;// Drop-down list para selecionar a placa de rede
 	private javax.swing.JTable packetTable;// table para exposição dos pacotes
 	private javax.swing.JButton startButton;// Usado para iniciar ou parar a captura
-	private javax.swing.JButton statsButton;// Usado para exibir as estatisticas
 	private javax.swing.JPanel totalPanel;// panel para totais
 	private javax.swing.JTextArea textArea;// text area com informações dos pacotes
 
 	private boolean startOrStop = false;
 	private Thread captureThread = null;
-	private TotalThread totalThread = null;
 	private Object[] title = new Object[] { "Número", "Hora", "Origem", "Destino", "Protocolo" };
 
 	private DefaultComboBoxModel<String> networkComboBoxModel = new DefaultComboBoxModel<String>();
@@ -72,7 +53,6 @@ public class SnifferControl {
 	 * @decription Inicia os componentes
 	 */
 	public void initAllComponents() {
-		// TODO Auto-generated method stub
 		this.networkInterface.setModel(networkComboBoxModel);
 		NetworkInterface[] devices = this.ipv6SnifferModel.getDevices();
 		for (NetworkInterface device : devices) {
@@ -105,11 +85,9 @@ public class SnifferControl {
 	public void startCapture() {
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				// TODO Auto-generated method stub
 				detailPacketTreeModel.setRoot(null);
 				packetTableModel.setNumRows(0);
 				networkInterface.setEnabled(false);
-				// ipv6OnlyButton.setEnabled(false);
 				startButton.setText("Parar");
 			}
 		});
@@ -120,20 +98,13 @@ public class SnifferControl {
 		// Captura multithreading
 		this.captureThread = new Thread(new Runnable() {
 			public void run() {
-				// TODO Auto-generated method stub
 				ipv6SnifferModel.beforeCapture();
-				ipv6SnifferModel.resetTotal();
 				ipv6SnifferModel.startCapture();
 			}
 		});
 
-		this.totalThread = new TotalThread();
-
 		this.captureThread.setDaemon(true);
 		this.captureThread.start();
-		this.totalThread.start();
-
-		//this.startOrStop = true;
 	}
 
 	/**
@@ -148,7 +119,6 @@ public class SnifferControl {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -156,14 +126,10 @@ public class SnifferControl {
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				networkInterface.setEnabled(true);
-				// ipv6OnlyButton.setEnabled(true);
 				startButton.setEnabled(true);
 				startButton.setText("Start");
 			}
 		});
-
-		this.totalThread.stopUpdate();
-		//this.startOrStop = false;
 	}
 
 	/**
@@ -532,7 +498,6 @@ public class SnifferControl {
 	 *            Selected table row
 	 */
 	public void updateDetailPacketTree(int packetIndex) {
-		// TODO Auto-generated method stub
 		Packet packet = null;
 		int rootNodes = 0;
 		try {
@@ -578,7 +543,6 @@ public class SnifferControl {
 				this.detailPacketTreeModel.insertNodeInto(ipv6Node(ip), root, rootNodes++);
 			}
 			
-			
 			switch(ip.protocol) {
 			case IPPacket.IPPROTO_ICMP:
 				if(packet instanceof ICMPPacket)
@@ -605,61 +569,58 @@ public class SnifferControl {
 		}
 	}
 
-	/**
-	 * @decription Internal thread class, used to update the total information
-	 * @author Alessandro A. Feitosa
-	 * 
-	 */
-	class TotalThread extends Thread {
 
-		private boolean update = true;
-
-		@Override
-		public void run() {
-			// TODO Auto-generated method stub
-			while (update) {
-				totalTCP.setText("Total TCP: " + ipv6SnifferModel.getTcpTotal());
-				totalUDP.setText("Total UDP: " + ipv6SnifferModel.getUdpTotal());
-				totalHotOpt.setText("Total Hop: " + ipv6SnifferModel.getHopoptTotal());
-				totalIpv6Frag.setText("Total IPv6 Frag.: " + ipv6SnifferModel.getIpv6FragTotal());
-				totalIgmp.setText("Total IGMP: " + ipv6SnifferModel.getIgmpTotal());
-				totalIcmp6.setText("Total ICMPv6: " + ipv6SnifferModel.getIcmp6Total());
-				totalNoNxt.setText("Total No Next: " + ipv6SnifferModel.getNoNxtTotal());
-				totalOpts.setText("Total Options: " + ipv6SnifferModel.getOptsTotal());
-				totalRoute.setText("Total Route: " + ipv6SnifferModel.getRouteTotal());
-				totalUnknown.setText("Total Unknown: " + ipv6SnifferModel.getUnknownTotal());
-			}
-		}
-
-		public void stopUpdate() {
-			this.update = false;
-		}
-	}
-
-	public javax.swing.JLabel getIpv6Total() {
-		return ipv6Total;
-	}
-
-	public void setIpv6Total(javax.swing.JLabel ipv6Total) {
-		this.ipv6Total = ipv6Total;
-	}
-
-	public javax.swing.JLabel getBytesTotal() {
-		return bytesTotal;
-	}
-
-	public void setBytesTotal(javax.swing.JLabel bytesTotal) {
-		this.bytesTotal = bytesTotal;
-	}
-
-	public javax.swing.JLabel getPacketTotal() {
-		return packetTotal;
-	}
-
-	public void setPacketTotal(javax.swing.JLabel packetTotal) {
-		this.packetTotal = packetTotal;
-	}
-
+    
+    public String getProtocolStr(Short protocol) {
+        switch (protocol) {
+        case IPPacket.IPPROTO_TCP:
+            return "TCP";
+        case IPPacket.IPPROTO_UDP:
+            return "UDP";
+        case IPPacket.IPPROTO_IGMP:
+            return "IGMP";
+        case IPPacket.IPPROTO_HOPOPT:
+            return "IPv6 hop-by-hop";
+        case IPPacket.IPPROTO_IP:
+            return "IPv4";
+        case IPPacket.IPPROTO_IPv6:
+            return "IPv6";
+        case IPPacket.IPPROTO_IPv6_Frag:
+            return "IPv6 Fragment";
+        case IPPacket.IPPROTO_IPv6_ICMP:
+            return "ICMPv6";
+        case IPPacket.IPPROTO_IPv6_NoNxt:
+            return "NoNxt IPv6";
+        case IPPacket.IPPROTO_IPv6_Opts:
+            return "Dest IPv6";
+        case IPPacket.IPPROTO_IPv6_Route:
+            return "Routing IPv6";
+        default:
+            return "Unknown";
+        }
+    }
+    
+    public String getEthernetTypeStr(Short protocol) {  
+        switch (protocol) {
+        case EthernetPacket.ETHERTYPE_ARP:
+            return "ARP (" + protocol+")";
+        case EthernetPacket.ETHERTYPE_IP:
+            return "IP (" + protocol+")";
+        case EthernetPacket.ETHERTYPE_IPV6:
+            return "IPv6 (" + protocol+")";
+        case EthernetPacket.ETHERTYPE_LOOPBACK:
+            return "LoopBack (" + protocol+")";
+        case EthernetPacket.ETHERTYPE_PUP:
+            return "PUP (" + protocol+")";
+        case EthernetPacket.ETHERTYPE_REVARP:
+            return "Revarp (" + protocol+")";
+        case EthernetPacket.ETHERTYPE_VLAN:
+            return "Vlan (" + protocol+")";
+        default:
+            return "Unknown (" + protocol+")";
+        }
+    }
+	
 	public javax.swing.JTree getDetailPacketTree() {
 		return detailPacketTree;
 	}
@@ -701,156 +662,6 @@ public class SnifferControl {
 	public void setTotalPanel(javax.swing.JPanel totalPanel) {
 		this.totalPanel = totalPanel;
 	}
-	
-	public String getProtocolStr(Short protocol) {
-		switch (protocol) {
-		case IPPacket.IPPROTO_TCP:
-			return "TCP";
-		case IPPacket.IPPROTO_UDP:
-			return "UDP";
-		case IPPacket.IPPROTO_IGMP:
-			return "IGMP";
-		case IPPacket.IPPROTO_HOPOPT:
-			return "IPv6 hop-by-hop";
-		case IPPacket.IPPROTO_IP:
-			return "IPv4";
-		case IPPacket.IPPROTO_IPv6:
-			return "IPv6";
-		case IPPacket.IPPROTO_IPv6_Frag:
-			return "IPv6 Fragment";
-		case IPPacket.IPPROTO_IPv6_ICMP:
-			return "ICMPv6";
-		case IPPacket.IPPROTO_IPv6_NoNxt:
-			return "NoNxt IPv6";
-		case IPPacket.IPPROTO_IPv6_Opts:
-			return "Dest IPv6";
-		case IPPacket.IPPROTO_IPv6_Route:
-			return "Routing IPv6";
-		default:
-			return "Unknown";
-		}
-	}
-	
-public String getEthernetTypeStr(Short protocol) {	
-	switch (protocol) {
-	case EthernetPacket.ETHERTYPE_ARP:
-		return "ARP (" + protocol+")";
-	case EthernetPacket.ETHERTYPE_IP:
-		return "IP (" + protocol+")";
-	case EthernetPacket.ETHERTYPE_IPV6:
-		return "IPv6 (" + protocol+")";
-	case EthernetPacket.ETHERTYPE_LOOPBACK:
-		return "LoopBack (" + protocol+")";
-	case EthernetPacket.ETHERTYPE_PUP:
-		return "PUP (" + protocol+")";
-	case EthernetPacket.ETHERTYPE_REVARP:
-		return "Revarp (" + protocol+")";
-	case EthernetPacket.ETHERTYPE_VLAN:
-		return "Vlan (" + protocol+")";
-	default:
-		return "Unknown (" + protocol+")";
-	}
-}
-
-public String getStatsCapture() {
-	String stats = "Total bytes: " + ipv6SnifferModel.getBytesTotal() + "\n";
-	stats += "Quantidade Total de Pacotes: " + ipv6SnifferModel.getPacketTotal() + "\n";
-	stats += "\n============================\n";
-	
-	stats += "Quantidade Total de Pacotes TCP: " + ipv6SnifferModel.getTcpTotal() + "\n";
-	stats += "Quantidade Total de Pacotes UDP: " + ipv6SnifferModel.getUdpTotal() + "\n";
-	stats += "Quantidade Total de Pacotes ICMPv6: " + ipv6SnifferModel.getIcmp6Total() + "\n";
-	
-	return stats;
-}
-
-	public javax.swing.JLabel getTotalTCP() {
-		return totalTCP;
-	}
-
-	public void setTotalTCP(javax.swing.JLabel totalTCP) {
-		this.totalTCP = totalTCP;
-	}
-
-	public javax.swing.JLabel getTotalUDP() {
-		return totalUDP;
-	}
-
-	public void setTotalUDP(javax.swing.JLabel totalUDP) {
-		this.totalUDP = totalUDP;
-	}
-
-	public javax.swing.JLabel getTotalHotOpt() {
-		return totalHotOpt;
-	}
-
-	public void setTotalHotOpt(javax.swing.JLabel totalHotOpt) {
-		this.totalHotOpt = totalHotOpt;
-	}
-
-	public javax.swing.JLabel getTotalIpv6Frag() {
-		return totalIpv6Frag;
-	}
-
-	public void setTotalIpv6Frag(javax.swing.JLabel totalIpv6Frag) {
-		this.totalIpv6Frag = totalIpv6Frag;
-	}
-
-	public javax.swing.JLabel getTotalIgmp() {
-		return totalIgmp;
-	}
-
-	public void setTotalIgmp(javax.swing.JLabel totalIgmp) {
-		this.totalIgmp = totalIgmp;
-	}
-
-	public javax.swing.JLabel getTotalIcmp6() {
-		return totalIcmp6;
-	}
-
-	public void setTotalIcmp6(javax.swing.JLabel totalIcmp6) {
-		this.totalIcmp6 = totalIcmp6;
-	}
-
-	public javax.swing.JLabel getTotalNoNxt() {
-		return totalNoNxt;
-	}
-
-	public void setTotalNoNxt(javax.swing.JLabel totalNoNxt) {
-		this.totalNoNxt = totalNoNxt;
-	}
-
-	public javax.swing.JLabel getTotalOpts() {
-		return totalOpts;
-	}
-
-	public void setTotalOpts(javax.swing.JLabel totalOpts) {
-		this.totalOpts = totalOpts;
-	}
-
-	public javax.swing.JLabel getTotalRoute() {
-		return totalRoute;
-	}
-
-	public void setTotalRoute(javax.swing.JLabel totalRoute) {
-		this.totalRoute = totalRoute;
-	}
-
-	public javax.swing.JLabel getTotalUnknown() {
-		return totalUnknown;
-	}
-
-	public void setTotalUnknown(javax.swing.JLabel totalUnknown) {
-		this.totalUnknown = totalUnknown;
-	}
-
-	public TotalThread getTotalThread() {
-		return totalThread;
-	}
-
-	public void setTotalThread(TotalThread totalThread) {
-		this.totalThread = totalThread;
-	}
 
 	public javax.swing.JTextArea getTextArea() {
 		return textArea;
@@ -858,13 +669,5 @@ public String getStatsCapture() {
 
 	public void setTextArea(javax.swing.JTextArea textArea) {
 		this.textArea = textArea;
-	}
-
-	public javax.swing.JButton getStatsButton() {
-		return statsButton;
-	}
-
-	public void setStatsButton(javax.swing.JButton statsButton) {
-		this.statsButton = statsButton;
 	}
 }

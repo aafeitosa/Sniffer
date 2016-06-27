@@ -1,23 +1,16 @@
 package ucs.view;
 
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import ucs.control.SnifferControl;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.GroupLayout;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SwingConstants;
-import java.awt.Rectangle;
-import javax.swing.JPanel;
-import java.awt.GridLayout;
-import java.awt.Component;
-import java.awt.BorderLayout;
-import javax.swing.BoxLayout;
-import java.awt.FlowLayout;
 
 /**
  *
@@ -36,12 +29,12 @@ public class SnifferFrame extends javax.swing.JFrame {
 	 * Creates new form Ipv6SnifferFrame
 	 */
 	public SnifferFrame() {
+	    setTitle("Sniffer Redes II");
 		initComponents();
 		ipv6SnifferControl.setDetailPacketTree(detailPacketTree);
 		ipv6SnifferControl.setNetworkInterface(networkInterface);
 		ipv6SnifferControl.setPacketTable(packetTable);
 		ipv6SnifferControl.setStartButton(startButton);
-		ipv6SnifferControl.setStatsButton(statsButton);
 		ipv6SnifferControl.setPacketTable(packetTable);
 		ipv6SnifferControl.setTextArea(textArea);
 
@@ -60,7 +53,6 @@ public class SnifferFrame extends javax.swing.JFrame {
 		jPanel1 = new javax.swing.JPanel();
 		jScrollPane1 = new javax.swing.JScrollPane();
 		packetTable = new javax.swing.JTable();
-		statsButton = new javax.swing.JButton();
 		jScrollPane2 = new javax.swing.JScrollPane();
 		detailPacketTree = new javax.swing.JTree();
 		textArea = new javax.swing.JTextArea();
@@ -78,18 +70,10 @@ public class SnifferFrame extends javax.swing.JFrame {
 		packetTable.getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
 					public void valueChanged(ListSelectionEvent e) {
-						// TODO Auto-generated method stub
 						tableSelectActionPerformed(e);
 					}
 				});
 		jScrollPane1.setViewportView(packetTable);
-		
-		statsButton.setText("Estatisticas");
-		statsButton.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				statsButtonActionPerformed(evt);
-			}
-		});
 
 		jScrollPane2.setViewportView(detailPacketTree);
 
@@ -136,14 +120,9 @@ public class SnifferFrame extends javax.swing.JFrame {
 		panel.add(networkInterface);
 				
 		networkInterface.setModel(new javax.swing.DefaultComboBoxModel<String>());
-		networkInterface.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				networkInterfaceActionPerformed(evt);
-			}
-		});
 		
 		startButton = new javax.swing.JButton();
-		startButton.setBounds(496, 5, 74, 23);
+		startButton.setBounds(496, 5, 114, 23);
 		startButton.setContentAreaFilled(false);
 		panel.add(startButton);
 				
@@ -172,23 +151,11 @@ public class SnifferFrame extends javax.swing.JFrame {
 		pack();
 	}// </editor-fold>//GEN-END:initComponents
 
-	private void networkInterfaceActionPerformed(java.awt.event.ActionEvent evt) {
-		// TODO add your handling code here:
-	}
-
 	private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {
-		// TODO add your handling code here:
 		this.ipv6SnifferControl.startOrStopCapture();
-	}
-	
-	private void statsButtonActionPerformed(java.awt.event.ActionEvent evt) {
-		// TODO add your handling code here:
-		String stats = this.ipv6SnifferControl.getStatsCapture();
-		JOptionPane.showMessageDialog(null, stats);
 	}
 
 	private void tableSelectActionPerformed(ListSelectionEvent e) {
-		// TODO add your handling code here:
 		if (!e.getValueIsAdjusting()) {
 			Object selected = this.packetTable.getModel().getValueAt(
 					this.packetTable.getSelectedRow(), 0);
@@ -224,7 +191,6 @@ public class SnifferFrame extends javax.swing.JFrame {
 	private javax.swing.JComboBox<String> networkInterface;
 	private javax.swing.JTable packetTable;
 	private javax.swing.JButton startButton;
-	private javax.swing.JButton statsButton;
 	private javax.swing.JScrollPane totalPanel;
 	private javax.swing.JTextArea textArea;
 }
