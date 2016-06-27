@@ -74,10 +74,10 @@ public class SnifferControl {
 	public void initAllComponents() {
 		// TODO Auto-generated method stub
 		this.networkInterface.setModel(networkComboBoxModel);
-		/*NetworkInterface[] devices = this.ipv6SnifferModel.getDevices();
+		NetworkInterface[] devices = this.ipv6SnifferModel.getDevices();
 		for (NetworkInterface device : devices) {
 			this.networkComboBoxModel.addElement(new String(device.description));
-		}*/
+		}
 		this.packetTable.setModel(packetTableModel);
 		this.detailPacketTreeModel = new DefaultTreeModel(null);
 		this.detailPacketTree.setModel(this.detailPacketTreeModel);

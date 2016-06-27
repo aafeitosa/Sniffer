@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ucs.view;
 
 import javax.swing.JFrame;
@@ -42,7 +37,6 @@ public class SnifferFrame extends javax.swing.JFrame {
 	 */
 	public SnifferFrame() {
 		initComponents();
-		//ipv6SnifferControl.setIpv6OnlyButton(ipv6OnlyButton);
 		ipv6SnifferControl.setDetailPacketTree(detailPacketTree);
 		ipv6SnifferControl.setNetworkInterface(networkInterface);
 		ipv6SnifferControl.setPacketTable(packetTable);
@@ -70,14 +64,10 @@ public class SnifferFrame extends javax.swing.JFrame {
 		jScrollPane2 = new javax.swing.JScrollPane();
 		detailPacketTree = new javax.swing.JTree();
 		textArea = new javax.swing.JTextArea();
-		//ipv6OnlyButton = new javax.swing.JRadioButton();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
 		packetTable.setModel(new javax.swing.table.DefaultTableModel() {
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 616040251973729541L;
 			boolean[] canEdit = new boolean[] { false, false, false, false };
 
@@ -139,31 +129,31 @@ public class SnifferFrame extends javax.swing.JFrame {
 		jLabel1.setBounds(10, 9, 229, 14);
 		panel.add(jLabel1);
 		
-				//jLabel1.setFont(new java.awt.Font("Times New Roman", 0, 18));
-				jLabel1.setHorizontalAlignment(SwingConstants.LEFT);
-				jLabel1.setText("Selecione um adaptador de rede para monitorar");
-				networkInterface = new javax.swing.JComboBox<String>();
-				networkInterface.setBounds(249, 6, 241, 20);
-				panel.add(networkInterface);
+		jLabel1.setHorizontalAlignment(SwingConstants.LEFT);
+		jLabel1.setText("Selecione um adaptador de rede para monitorar");
+		networkInterface = new javax.swing.JComboBox<String>();
+		networkInterface.setBounds(249, 6, 241, 20);
+		panel.add(networkInterface);
 				
-						//networkInterface.setFont(new java.awt.Font("Times New Roman", 0, 18));
-						networkInterface.setModel(new javax.swing.DefaultComboBoxModel<String>());
-						networkInterface.addActionListener(new java.awt.event.ActionListener() {
-							public void actionPerformed(java.awt.event.ActionEvent evt) {
-								networkInterfaceActionPerformed(evt);
-							}
-						});
-				startButton = new javax.swing.JButton();
-				startButton.setBounds(496, 5, 74, 23);
-				startButton.setContentAreaFilled(false);
-				panel.add(startButton);
+		networkInterface.setModel(new javax.swing.DefaultComboBoxModel<String>());
+		networkInterface.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				networkInterfaceActionPerformed(evt);
+			}
+		});
+		
+		startButton = new javax.swing.JButton();
+		startButton.setBounds(496, 5, 74, 23);
+		startButton.setContentAreaFilled(false);
+		panel.add(startButton);
 				
-						startButton.setText("Start");
-						startButton.addActionListener(new java.awt.event.ActionListener() {
-							public void actionPerformed(java.awt.event.ActionEvent evt) {
-								startButtonActionPerformed(evt);
-							}
-						});
+		startButton.setText("Start");
+		startButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				startButtonActionPerformed(evt);
+			}
+		});
+		
 		jPanel1.setLayout(jPanel1Layout);
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(
@@ -216,7 +206,6 @@ public class SnifferFrame extends javax.swing.JFrame {
 	 *            the command line arguments
 	 */
 	public static void main(String args[]) {
-		System.out.println(System.getProperty("java.library.path"));
 		/* Create and display the form */
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -224,21 +213,10 @@ public class SnifferFrame extends javax.swing.JFrame {
 				frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 			}
 		});
-		/*javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createAndShowGUI();
-            }
-        });*/
-	}
-	
-	private static void createAndShowGUI() {
-		
-
 	}
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JTree detailPacketTree;
-	//private javax.swing.JRadioButton ipv6OnlyButton;
 	private javax.swing.JLabel jLabel1;
 	private javax.swing.JPanel jPanel1;
 	private javax.swing.JScrollPane jScrollPane1;
