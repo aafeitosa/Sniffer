@@ -24,6 +24,7 @@ import jpcap.packet.Packet;
 import jpcap.packet.TCPPacket;
 import jpcap.packet.UDPPacket;
 import ucs.model.SnifferModel;
+import ucs.view.Tcp;
 
 /**
  * 
@@ -38,11 +39,10 @@ public class SnifferControl {
 	private javax.swing.JTable packetTable;// table para exposição dos pacotes
 	private javax.swing.JButton startButton;// Usado para iniciar ou parar a captura
 	private javax.swing.JPanel totalPanel;// panel para totais
-	private javax.swing.JTextArea textArea;// text area com informações dos pacotes
 
 	private boolean startOrStop = false;
 	private Thread captureThread = null;
-	private Object[] title = new Object[] { "Número", "Hora", "Origem", "Destino", "Protocolo" };
+	private Object[] title = new Object[] { "Número", "Hora", "Origem", "Destino", "Próx. Cabeçalho" };
 
 	private DefaultComboBoxModel<String> networkComboBoxModel = new DefaultComboBoxModel<String>();
 
@@ -85,14 +85,18 @@ public class SnifferControl {
 	public void startCapture() {
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				detailPacketTreeModel.setRoot(null);
-				packetTableModel.setNumRows(0);
-				networkInterface.setEnabled(false);
+			    try {
+    				detailPacketTreeModel.setRoot(null);
+    				packetTableModel.setNumRows(0);
+    				networkInterface.setEnabled(false);
+			    } catch(Exception e) {
+			        
+			    }
 				startButton.setText("Parar");
 			}
 		});
 
-		this.ipv6SnifferModel.setDeviceIndex(this.networkInterface
+		this.ipv6SnifferModel.setDispositivoIndex(this.networkInterface
 				.getSelectedIndex());
 
 		// Captura multithreading
@@ -139,7 +143,6 @@ public class SnifferControl {
 	 */
 	public synchronized void addNewPacket(int index, Packet packet) {
 		synchronized (packetTableModel) {
-			
 			IPPacket ip = (IPPacket) packet;
 			if(ip != null) {
 				String sourceAddr = ip.src_ip.toString();
@@ -149,7 +152,6 @@ public class SnifferControl {
 						sourceAddr.substring(1, sourceAddr.length()),
 						destAddr.substring(1, destAddr.length()), getProtocolStr(ip.protocol) });
 			}
-			textArea.append(index + " - " +packet.toString() +"\n");
 		}
 	}
 
@@ -620,6 +622,21 @@ public class SnifferControl {
             return "Unknown (" + protocol+")";
         }
     }
+    
+    public void abrirPacote() {
+        Object selected = this.packetTable.getModel().getValueAt(
+                this.packetTable.getSelectedRow(), 0);
+        if(selected != null) {
+        
+            Packet packet = ipv6SnifferModel.getPacketByIndex(Integer
+                    .valueOf(this.packetTable.getModel().getValueAt(
+                            this.packetTable.getSelectedRow(), 0) + ""));
+            
+            if(packet instanceof TCPPacket) {
+                new Tcp((TCPPacket)packet, ipv6SnifferModel.getListaDePacotes()).setVisible(true);
+            }
+        }
+    }
 	
 	public javax.swing.JTree getDetailPacketTree() {
 		return detailPacketTree;
@@ -661,13 +678,5 @@ public class SnifferControl {
 
 	public void setTotalPanel(javax.swing.JPanel totalPanel) {
 		this.totalPanel = totalPanel;
-	}
-
-	public javax.swing.JTextArea getTextArea() {
-		return textArea;
-	}
-
-	public void setTextArea(javax.swing.JTextArea textArea) {
-		this.textArea = textArea;
 	}
 }

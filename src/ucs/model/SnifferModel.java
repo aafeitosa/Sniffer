@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import jpcap.JpcapCaptor;
 import jpcap.NetworkInterface;
 import jpcap.PacketReceiver;
-import jpcap.packet.DatalinkPacket;
-import jpcap.packet.EthernetPacket;
 import jpcap.packet.IPPacket;
 import jpcap.packet.Packet;
 import ucs.control.SnifferControl;
@@ -18,44 +16,40 @@ import ucs.control.SnifferControl;
  */
 public class SnifferModel implements PacketReceiver {
 
-	private SnifferControl ipv6SnifferControl;
-	private NetworkInterface[] devices;// Store all cards
-	private NetworkInterface device;// Card you want to monitor
-	private int deviceIndex = 0;// Monitoring the corresponding index card
-	private JpcapCaptor jpcap;
-	private volatile ArrayList<Packet> packetList = new ArrayList<Packet>();
+	private SnifferControl snifferControl;
+	private NetworkInterface[] dispositivos;// Lista dos dispositivos de rede
+	private NetworkInterface dispositivoSelecionado;// Dispositivo selecionar para realizar a captura
+	private int dispositivoIndex = 0;// Indice do dispositivo selecionar para realizar a captura
+	private JpcapCaptor jpcap; //Biblioteca de captura
+	private volatile ArrayList<Packet> listaDePacotes = new ArrayList<Packet>(); //Lista de pacotes capturados
 
-	private PacketReceiver packetReceiver;
+	private PacketReceiver recebedorDePacotes;
 
-	public SnifferModel(SnifferControl ipv6SnifferControl) {
+	public SnifferModel(SnifferControl snifferControl) {
 		super();
-		this.ipv6SnifferControl = ipv6SnifferControl;
-		this.packetReceiver = this;
+		this.snifferControl = snifferControl;
+		this.recebedorDePacotes = this;
 	}
 
 	/**
-	 * @decription Get all of the cards
-	 * @return A list of all network cards
+	 * @decription Retorna todos os dispositivos de rede
+	 * @return Lista com os dispositivos de rede
 	 */
 	public NetworkInterface[] getDevices() {
-		devices = JpcapCaptor.getDeviceList(); // List of devices
-		return this.devices;
+	    dispositivos = JpcapCaptor.getDeviceList(); // Lista de dispositivos
+		return this.dispositivos;
 	}
 
 	/**
-	 * @decription Open connection
-	 * @return The use of the card
+	 * @decription Abre a conexão
+	 * @return dispositivo usados para conexão
 	 */
 	private NetworkInterface openDevice() throws IOException {
+		//jpcap = JpcapCaptor.openFile("C:\\Users\\I848435\\Downloads\\http_amostra1");
+		//jpcap = JpcapCaptor.openFile("C:\\Users\\I848435\\Downloads\\captura_ftp.pcap");
 		
-		//jpcap = JpcapCaptor.openFile("C:\\Users\\officeworks\\Downloads\\v6.pcap");
-		//jpcap = JpcapCaptor.openFile("C:\\Users\\officeworks\\Downloads\\icmp.pcap");
-		
-		jpcap = JpcapCaptor.openDevice(this.device, 65535, true, 1000); // Open connections and equipment 
-		//jpcap.setFilter("src host fe:80:0:0", true);
-		// Listen only IP packets
-		//jpcap.setFilter("ip", true); // Listen only IP data packet
-		return device;
+		jpcap = JpcapCaptor.openDevice (this.dispositivoSelecionado, 65535, true, 1000); // Abre a conexão e o dispositivo
+		return dispositivoSelecionado;
 	}
 
 	/**
@@ -64,21 +58,21 @@ public class SnifferModel implements PacketReceiver {
 	 * @return
 	 */
 	public void beforeCapture() {
-		// Turn off the original captor
+		// Para a captura atual
 		if (this.jpcap != null) {
 			this.jpcap.close();
 			this.jpcap = null;
 		}
 
-		// Open a new device
+		// Abre o dispositivo selecionado
 		try {
 			this.openDevice();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		// Empty the package list packages
-		this.packetList = new ArrayList<Packet>(100);
+		// Limpa a lista de pacotes
+		this.listaDePacotes = new ArrayList<Packet>();
 	}
 
 	/**
@@ -86,7 +80,7 @@ public class SnifferModel implements PacketReceiver {
 	 * @return
 	 */
 	public boolean startCapture() {
-		this.jpcap.loopPacket(161, this.packetReceiver);
+		this.jpcap.loopPacket(0, this.recebedorDePacotes);
 
 		return true;
 	}
@@ -108,11 +102,10 @@ public class SnifferModel implements PacketReceiver {
 	 * @return
 	 * @throws Exception
 	 */
-	public Packet getPacketByIndex(int index) throws Exception {
-		if (index >= this.packetList.size() || index < 0)
-			throw new Exception(
-					"Packet sequence number is greater than the number of packets");
-		return this.packetList.get(index);
+	public Packet getPacketByIndex(int index) {
+		if (index >= this.listaDePacotes.size() || index < 0)
+		    return null;
+		return this.listaDePacotes.get(index-1);
 	}
 
 	/**
@@ -123,45 +116,35 @@ public class SnifferModel implements PacketReceiver {
 	 * @return
 	 */
 	public void receivePacket(Packet packet) {
-		// TODO Auto-generated method stub
-		if (packet == null)// No package, return
+		if (packet == null)// Não retorna nada em casa do pacote seja null
 			return;
-		//Filter only ipv6
-		/*if (((IPPacket)packet).version != 6)
-			return;*/
-		synchronized (packetList) {
+		synchronized (listaDePacotes) {
 			addPacket(packet);
 		}
 	}
 
     public synchronized void addPacket(Packet packet) {
-    	// Update statistics
+    	// Atualiza as estatisticas
     	this.jpcap.updateStat();
     	
-    	IPPacket ip = (IPPacket) packet;
-    	
-    	if (ip != null) {
-    		
-    		DatalinkPacket dp = ip.datalink;
-    		EthernetPacket ept=(EthernetPacket)dp;
-    		
-    		// The new packages added to the list
-    		this.packetList.add(packet);
-    		// Refresh view layer forms
-    		this.ipv6SnifferControl.addNewPacket(this.packetList.size() - 1, packet);
+    	if(packet instanceof IPPacket) {
+    		// Novo pacote é adicionado à lista
+    		this.listaDePacotes.add(packet);
+    		// Atualiza a visualização dos pacotes
+    		this.snifferControl.addNewPacket(this.listaDePacotes.size(), packet);
     	}
     }
 
-	public int getDeviceIndex() {
-		return deviceIndex;
+	public int getDispositivoIndex() {
+		return dispositivoIndex;
 	}
 
-	public void setDeviceIndex(int deviceIndex) {
-		this.device = this.devices[deviceIndex];
-		this.deviceIndex = deviceIndex;
+	public void setDispositivoIndex(int dispositivoIndex) {
+		this.dispositivoSelecionado = this.dispositivos[dispositivoIndex];
+		this.dispositivoIndex = dispositivoIndex;
 	}
 
-	public ArrayList<Packet> getPacketList() {
-		return packetList;
+	public ArrayList<Packet> getListaDePacotes() {
+		return listaDePacotes;
 	}
 }
